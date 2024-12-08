@@ -1,12 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from gpt4all import GPT4All
+from duckduckgo_search import DDGS
 
-# Initialize FastAPI app
 app = FastAPI()
-
-# Load the GPT-4All model
-model = GPT4All("")
 
 # Create a request model for incoming prompts
 class RequestModel(BaseModel):
@@ -15,5 +11,5 @@ class RequestModel(BaseModel):
 @app.post("/chat")
 async def chat(request: RequestModel):
     prompt = request.prompt
-    response = model.chat(prompt)
-    return {"message": response}
+    results = DDGS().chat(prompt, model='llama-3.1-70b')
+    return {"message": results}
