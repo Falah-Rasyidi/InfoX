@@ -13,9 +13,17 @@ class RequestModel(BaseModel):
 async def extract(request: RequestModel):
     text = request.prompt
 
-    rake = Rake()
-    keywords = rake.run(text)
-    print(keywords)
+    try:
+        rake = Rake()
+        keywords = rake.run(text)
+        print(f"KEYWORDS ARE: {keywords}\n")
+        
+        return {"message": keywords[0][0]}
+    except Exception as e:
+        print(f"Error processing request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
 
 @app.post("/chat")
 async def chat(request: RequestModel):
