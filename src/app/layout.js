@@ -21,9 +21,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-blue-700 via-blue-800 to-gray-900 min-h-screen flex flex-col`}
       >
-        <header className="bg-gray-800 text-white">
+        {/* Header */}
+        <header className="bg-gray-800 text-white flex-none">
           <nav className="container mx-auto flex justify-between items-center py-4 px-6">
             <div className="text-2xl font-bold">InfoX</div>
             <ul className="flex space-x-4">
@@ -50,8 +51,12 @@ export default function RootLayout({ children }) {
             </ul>
           </nav>
         </header>
-        {children}
-        <footer className="bg-gray-800 text-white py-4 mt-8">
+
+        {/* Main Content */}
+        <main className="flex-grow">{children}</main>
+
+        {/* Footer */}
+        <footer className="bg-gray-800 text-white py-4 flex-none">
           <div className="container mx-auto text-center">
             &copy; {new Date().getFullYear()} InfoX. All rights reserved.
           </div>
