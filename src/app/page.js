@@ -5,13 +5,32 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
 
-  // Clear messages on refresh
-  useEffect(() => {
-    setMessages([]);
-  }, []);
+  // Mark all messages as seen when scrolled to the bottom
+  const handleScroll = () => {
+    const chatHistory = chatHistoryRef.current;
+    if (
+      chatHistory &&
+      chatHistory.getBoundingClientRect().bottom <= window.innerHeight
+    ) {
+      const updatedMessages = messages.map((msg) => ({ ...msg, seen: true }));
+      setMessages(updatedMessages);
+      setPopupVisible(false); // Hide popup
+    }
+  };
 
+  // Highlight unseen messages on initial render and scrolling
+  useEffect(() => {
+    const unseenExists = messages.some((msg) => !msg.seen);
+    setPopupVisible(unseenExists);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [messages]);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim()) return; // Avoid empty messages
@@ -26,8 +45,8 @@ export default function Home() {
       const data = await res.json();
       setMessages([
         ...messages,
-        { text: input, isBot: false },
-        { text: data.message.message, isBot: true },
+        { text: input, isBot: false, seen: false },
+        { text: data.message.message, isBot: true, seen: false },
       ]);
       setInput("");
     } catch (error) {
@@ -35,8 +54,12 @@ export default function Home() {
     }
   };
 
+  // Scroll to the chat history section
   const scrollToChatHistory = () => {
     chatHistoryRef.current?.scrollIntoView({ behavior: "smooth" });
+    const updatedMessages = messages.map((msg) => ({ ...msg, seen: true }));
+    setMessages(updatedMessages); // Mark all messages as seen
+    setPopupVisible(false); // Hide popup
   };
 
   return (
@@ -75,9 +98,9 @@ export default function Home() {
       {/* Chat Section */}
       <div
         ref={chatHistoryRef}
-        className="container mx-auto px-4 py-8 bg-gray-100"
+        className="container mx-auto my-8 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-lg backdrop-blur-lg"
       >
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Chat History</h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">Chat History</h2>
         <div className="space-y-4">
           {messages.map((msg, idx) => (
             <div
@@ -86,7 +109,7 @@ export default function Home() {
                 msg.isBot
                   ? "bg-gray-800 text-white text-left"
                   : "bg-blue-500 text-white text-right"
-              }`}
+              } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
             >
               <p>{msg.text}</p>
             </div>
@@ -95,7 +118,7 @@ export default function Home() {
       </div>
 
       {/* Animated Arrow */}
-      {messages.length > 0 && (
+      {popupVisible && (
         <div
           onClick={scrollToChatHistory}
           className="fixed bottom-10 right-10 bg-blue-500 text-white rounded-full p-4 cursor-pointer hover:bg-blue-600 animate-bounce shadow-lg"
