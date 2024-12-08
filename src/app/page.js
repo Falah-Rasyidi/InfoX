@@ -43,11 +43,10 @@ export default function Home() {
         body: JSON.stringify({ prompt: input }),
       });
       const data = await res.json();
-      setMessages([
-        ...messages,
-        { text: input, isBot: false, seen: false },
-        { text: data.message.message, isBot: true, seen: false },
-      ]);
+      
+      messages.unshift({ text: data.message.message, isBot: true, seen: false })
+      messages.unshift({ text: input, isBot: false, seen: false })
+      setMessages(messages)
       setInput("");
     } catch (error) {
       console.error("Error during /api/chat fetch:", error);
