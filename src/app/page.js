@@ -98,7 +98,7 @@ export default function Home() {
       {/* Chat Section */}
       <div
         ref={chatHistoryRef}
-        className="container mx-auto my-8 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-lg backdrop-blur-lg"
+        className="container mx-auto my-8 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg"
       >
         <h2 className="text-2xl font-bold mb-4 text-white">Chat History</h2>
         <div className="space-y-4">
@@ -121,7 +121,7 @@ export default function Home() {
       {popupVisible && (
         <div
           onClick={scrollToChatHistory}
-          className="fixed bottom-10 right-10 bg-blue-500 text-white rounded-full p-4 cursor-pointer hover:bg-blue-600 animate-bounce shadow-lg"
+          className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-500 text-white rounded-full p-4 cursor-pointer hover:bg-blue-600 animate-bounce shadow-2xl shadow-black"
           title="View Chat History"
         >
           ↓
