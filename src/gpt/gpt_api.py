@@ -11,5 +11,9 @@ class RequestModel(BaseModel):
 @app.post("/chat")
 async def chat(request: RequestModel):
     prompt = request.prompt
-    results = DDGS().chat(prompt, model='llama-3.1-70b')
-    return {"message": results}
+    try:
+        results = DDGS().chat(prompt, model='llama-3.1-70b')
+        return {"message": results}
+    except Exception as e:
+        print(f"Error processing request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
