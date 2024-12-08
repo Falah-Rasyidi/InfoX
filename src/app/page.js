@@ -8,19 +8,21 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Send the input to the API endpoint
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt: input }),
-    });
-
-    const data = await res.json();
-    setMessages([...messages, { text: input, isBot: false }, { text: data.message, isBot: true }]);
-    setInput('');
+    try { 
+      // Send the input to the API endpoint
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: input }),
+      });
+      const data = await res.json();
+      setMessages([...messages, { text: input, isBot: false }, { text: data.message.message, isBot: true }]);
+      setInput('');
+    } catch (error) {
+      console.error('Error during /api/chat fetch:', error);
+    }
   };
 
   return (
@@ -38,7 +40,6 @@ export default function Home() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask something..."
         />
         <button type="submit">Send</button>
       </form>
