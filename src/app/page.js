@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from 'next/image'
+import Image from "next/image";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -12,10 +12,16 @@ export default function Home() {
     "Trending topic 1!",
     "Trending topic 2!",
     "Trending topic 3!",
-  ]); // yap state about trending news topics
+  ]); // State about trending news topics
   const [platform, setPlatform] = useState("");
   const [format, setFormat] = useState("");
   const [tone, setTone] = useState("");
+
+  // Toggle button state for switching between chat and news mode
+  const [isNewsMode, setIsNewsMode] = useState(false);
+  const toggleMode = () => {
+    setIsNewsMode((prevMode) => !prevMode);
+  };
 
   const handlePlatformChange = (e) => setPlatform(e.target.value);
   const handleFormatChange = (e) => setFormat(e.target.value);
@@ -57,9 +63,9 @@ export default function Home() {
       });
       const data = await res.json();
 
-      messages.unshift({ text: data.message.message, isBot: true, seen: false })
-      messages.unshift({ text: input, isBot: false, seen: false })
-      setMessages(messages)
+      messages.unshift({ text: data.message.message, isBot: true, seen: false });
+      messages.unshift({ text: input, isBot: false, seen: false });
+      setMessages(messages);
       setInput("");
     } catch (error) {
       console.error("Error during /api/chat fetch:", error);
@@ -79,7 +85,7 @@ export default function Home() {
       {/* Hero Section */}
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
-          <Image 
+          <Image
             src="/image.png"
             alt="Mascot"
             width={300}
@@ -90,7 +96,7 @@ export default function Home() {
             Welcome to <span className="text-black text-400">Info<sup>X</sup></span>
           </h1>
           <p className="text-lg text-white-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the magic happen. 
+            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
           </p>
           <form
             onSubmit={handleSubmit}
@@ -111,10 +117,10 @@ export default function Home() {
                 Send
               </button>
             </div>
-            
+
             <div className="flex gap-4 justify-center">
-              <select 
-                id="platform" 
+              <select
+                id="platform"
                 className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
                 value={platform}
                 onChange={handlePlatformChange}
@@ -158,26 +164,53 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Chat Section */}
-      <div
-        ref={chatHistoryRef}
-        className="container mx-auto my-10 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-white">Chat History</h2>
-        <div className="space-y-4">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`p-4 rounded-lg ${
-                msg.isBot
-                  ? "bg-gray-800 text-white text-left"
-                  : "bg-blue-500 text-white text-right"
-              } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
-            >
-              <p>{msg.text}</p>
-            </div>
-          ))}
+      {/* Chat Section with Toggle */}
+      <div className="container mx-auto my-20 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-white">
+            {isNewsMode ? "News Articles" : "Chat History"}
+          </h2>
+          <button
+            onClick={toggleMode}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+          >
+            {isNewsMode ? "Switch to Chat History" : "Switch to News Articles"}
+          </button>
         </div>
+
+        {/* Content */}
+        {isNewsMode ? (
+          <div className="grid gap-4">
+            {topics.map((topic, idx) => (
+              <div
+                key={idx}
+                className="p-4 bg-customOrange bg-200 rounded-lg shadow-md flex flex-col gap-2"
+              >
+                <div className="text-orange-900 font-semibold">
+                  News Topic: <span className="italic">{topic}</span>
+                </div>
+                <p className="text-sm">
+                  {topic}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div ref={chatHistoryRef} className="space-y-4">
+            {messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`p-4 rounded-lg ${
+                  msg.isBot
+                    ? "bg-gray-800 text-white text-left"
+                    : "bg-blue-500 text-white text-right"
+                } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
+              >
+                <p>{msg.text}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Animated Arrow */}
