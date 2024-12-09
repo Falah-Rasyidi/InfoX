@@ -112,6 +112,7 @@ export default function Home() {
         },
         body: JSON.stringify({ prompt: input }),
       });
+
       const data = await res.json();
 
       // Commented out bc can't render array of article objects until fed into vectara
@@ -120,6 +121,10 @@ export default function Home() {
       //   { text: data.message.message, isBot: true, seen: false },
       //   ...messages,
       // ]);
+
+      // TODO: Upload news articles to current session
+      // data.message is an array of article objects
+
       setInput("");
     } catch (error) {
       console.error("Error during /api/retrieve fetch:", error);
@@ -146,31 +151,6 @@ export default function Home() {
     // };
   };
 
-  const handleExit = async () => {
-    try {
-      // Make a request to the /api/exit endpoint to clear the session
-      const response = await fetch("/api/exit", {
-        method: "GET",
-        credentials: "same-origin", // Include cookies with the request
-      });
-  
-      // Parse the JSON response
-      const data = await response.json();
-  
-      if (response.ok) {
-        // Handle success (session cleared)
-        console.log(data.message); // "Session cleared"
-        // Optionally, update UI state or redirect
-      } else {
-        // Handle error if needed
-        console.error("Error clearing session:", data.message);
-      }
-    } catch (error) {
-      console.error("Error during exit:", error);
-    }
-  };
-  
-
   // Scroll to the chat history section
   const scrollToChatHistory = () => {
     chatHistoryRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -196,13 +176,6 @@ export default function Home() {
             Your gateway to AI-powered posts. Type in your topics and let the
             magic happen.
           </p>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
-            onClick={handleExit}
-          >
-            Remove session
-          </button>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col justify-center items-center gap-4"
