@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [sessionId, setSessionId] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
 
@@ -35,6 +36,36 @@ export default function Home() {
     }
   };
 
+  // Fetch session data on initial render
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        // Make a request to the /api/session endpoint
+        const response = await fetch("/api/session", {
+          method: "GET",
+          credentials: "same-origin", // Include cookies with the request
+        });
+
+        // Parse the JSON response
+        const data = await response.json();
+
+        if (response.ok) {
+          // Set session Id
+          setSessionId(data.sessionId);
+          console.log("Session data:", data);
+        } else {
+          // Handle error if needed
+          setMessage("Error fetching session");
+        }
+      } catch (error) {
+        console.error("Error fetching session:", error);
+        setMessage("An error occurred");
+      }
+    };
+
+    fetchSession();
+  }, []);
+
   // Highlight unseen messages on initial render and scrolling
   useEffect(() => {
     const unseenExists = messages.some((msg) => !msg.seen);
@@ -47,7 +78,8 @@ export default function Home() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return; // Avoid empty messages
+    // TODO: Remove Chat API call
+    if (!input.trim()) return;
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -67,7 +99,52 @@ export default function Home() {
     } catch (error) {
       console.error("Error during /api/chat fetch:", error);
     }
+    // Call Vectara API to generate post
+    //   try {
+    //     const res = await fetch("/api/generate", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ prompt: input }),
+    //     });
+    //     const data = await res.json();
+
+    //     setMessages([
+    //       { text: input, isBot: false, seen: false },
+    //       { text: data.message.message, isBot: true, seen: false },
+    //       ...messages,
+    //     ]);
+    //     setInput("");
+    //   } catch (error) {
+    //     console.error("Error during /api/generate fetch:", error);
+    // };
   };
+
+  const handleExit = async () => {
+    try {
+      // Make a request to the /api/exit endpoint to clear the session
+      const response = await fetch("/api/exit", {
+        method: "GET",
+        credentials: "same-origin", // Include cookies with the request
+      });
+  
+      // Parse the JSON response
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Handle success (session cleared)
+        console.log(data.message); // "Session cleared"
+        // Optionally, update UI state or redirect
+      } else {
+        // Handle error if needed
+        console.error("Error clearing session:", data.message);
+      }
+    } catch (error) {
+      console.error("Error during exit:", error);
+    }
+  };
+  
 
   // Scroll to the chat history section
   const scrollToChatHistory = () => {
@@ -85,11 +162,22 @@ export default function Home() {
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-blue-400">Info<sup>X</sup></span>
+            Welcome to{" "}
+            <span className="text-blue-400">
+              Info<sup>X</sup>
+            </span>
           </h1>
           <p className="text-lg text-gray-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
+            Your gateway to AI-powered posts. Type in your topics and let the
+            magic happen.
           </p>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
+            onClick={handleExit}
+          >
+            Remove session
+          </button>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col justify-center items-center gap-4"
@@ -109,10 +197,15 @@ export default function Home() {
                 Send
               </button>
             </div>
-            
+
             <div className="flex gap-4 justify-center">
-              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Platform</option>
+              <select
+                id="platform"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+              >
+                <option selected disabled>
+                  Platform
+                </option>
                 <option>Facebook</option>
                 <option>Instagram</option>
                 <option>LinkedIn</option>
@@ -120,16 +213,26 @@ export default function Home() {
                 <option>Twitter</option>
               </select>
 
-              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Format</option>
+              <select
+                id="format"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+              >
+                <option selected disabled>
+                  Format
+                </option>
                 <option>Post</option>
                 <option>Image</option>
                 <option>Video</option>
                 <option>Meme</option>
               </select>
 
-              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Tone</option>
+              <select
+                id="tone"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+              >
+                <option selected disabled>
+                  Tone
+                </option>
                 <option>Formal</option>
                 <option>Casual</option>
                 <option>Inspirational</option>
