@@ -6,7 +6,6 @@ from newspaper import Article
 from datetime import datetime
 
 import requests
-import json
 
 app = FastAPI()
 
