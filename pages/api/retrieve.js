@@ -2,7 +2,7 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
             const { prompt } = req.body;
-            console.log(prompt);
+            console.log("[retrieve.js] News Article Retrieval Prompt For: ", prompt);
 
             const response = await fetch('http://localhost:5000/retrieve', {
                 method: 'POST',
