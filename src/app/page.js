@@ -8,16 +8,30 @@ export default function Home() {
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
 
-  // Mark all messages as seen when scrolled to the bottom
+  // Mark messages as seen when they fit in the user's viewport
   const handleScroll = () => {
     const chatHistory = chatHistoryRef.current;
-    if (
-      chatHistory &&
-      chatHistory.getBoundingClientRect().bottom <= window.innerHeight
-    ) {
-      const updatedMessages = messages.map((msg) => ({ ...msg, seen: true }));
-      setMessages(updatedMessages);
-      setPopupVisible(false); // Hide popup
+    if (chatHistory) {
+      messages.map((msg, idx) => {
+        if (idx % 2 === 0 && idx + 1 < messages.length) {
+          console.log(messages);
+          const message1 = document.getElementById(`message-${idx}`);
+          const message2 = document.getElementById(`message-${idx + 1}`);
+          if (message1 && message2) {
+            const rect2 = message2.getBoundingClientRect();
+            if (rect2.bottom <= window.innerHeight) {
+              // 3.5-second delay
+              setTimeout(() => {
+                messages[idx] = { ...msg, seen: true };
+                messages[idx + 1] = { ...messages[idx + 1], seen: true };
+                setMessages([...messages]);
+                const unseenExists = messages.some((msg) => !msg.seen);
+                setPopupVisible(unseenExists);
+              }, 3500);
+            }
+          }
+        }
+      });
     }
   };
 
@@ -44,9 +58,11 @@ export default function Home() {
       });
       const data = await res.json();
 
-      messages.unshift({ text: data.message.message, isBot: true, seen: false })
-      messages.unshift({ text: input, isBot: false, seen: false })
-      setMessages(messages)
+      setMessages([
+        { text: input, isBot: false, seen: false },
+        { text: data.message.message, isBot: true, seen: false },
+        ...messages,
+      ]);
       setInput("");
     } catch (error) {
       console.error("Error during /api/chat fetch:", error);
@@ -56,9 +72,11 @@ export default function Home() {
   // Scroll to the chat history section
   const scrollToChatHistory = () => {
     chatHistoryRef.current?.scrollIntoView({ behavior: "smooth" });
-    const updatedMessages = messages.map((msg) => ({ ...msg, seen: true }));
-    setMessages(updatedMessages); // Mark all messages as seen
     setPopupVisible(false); // Hide popup
+    setTimeout(() => {
+      const updatedMessages = messages.map((msg) => ({ ...msg, seen: true }));
+      setMessages(updatedMessages); // Mark all messages as seen
+    }, 2000);
   };
 
   return (
@@ -70,7 +88,7 @@ export default function Home() {
             Welcome to <span className="text-blue-400">Info<sup>X</sup></span>
           </h1>
           <p className="text-lg text-gray-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the magic happen. 
+            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
           </p>
           <form
             onSubmit={handleSubmit}
@@ -132,12 +150,13 @@ export default function Home() {
         <div className="space-y-4">
           {messages.map((msg, idx) => (
             <div
+              id={`message-${idx}`}
               key={idx}
-              className={`p-4 rounded-lg ${
+              className={`p-4 rounded-lg message ${
                 msg.isBot
                   ? "bg-gray-800 text-white text-left"
                   : "bg-blue-500 text-white text-right"
-              } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
+              } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
             >
               <p>{msg.text}</p>
             </div>
