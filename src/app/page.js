@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [sessionId, setSessionId] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
 
@@ -38,33 +37,60 @@ export default function Home() {
 
   // Fetch session data on initial render
   useEffect(() => {
-    const fetchSession = async () => {
+    const fetchAndCreateCorpus = async () => {
       try {
-        // Make a request to the /api/session endpoint
-        const response = await fetch("/api/session", {
-          method: "GET",
-          credentials: "same-origin", // Include cookies with the request
-        });
-
-        // Parse the JSON response
-        const data = await response.json();
-
-        if (response.ok) {
-          // Set session Id
-          setSessionId(data.sessionId);
+        // Fetch the session ID
+        const fetchSession = async () => {
+          const response = await fetch("/api/session", {
+            method: "GET",
+            credentials: "same-origin", // Include cookies with the request
+          });
+  
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to fetch session");
+          }
+  
+          const data = await response.json();
           console.log("Session data:", data);
-        } else {
-          // Handle error if needed
-          setMessage("Error fetching session");
-        }
+          return data.sessionId; // Return the session ID
+        };
+  
+        // Create a corpus
+        const createCorpus = async (sessionId) => {
+          const response = await fetch("/api/corpus", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              corpusKey: sessionId, // Use sessionId as the corpusKey
+              description: `Corpus created for client ${sessionId}'s session.`,
+            }),
+          });
+  
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to create corpus");
+          }
+  
+          const data = await response.json();
+          console.log("Corpus creation response:", data);
+          setMessage("Corpus created successfully");
+        };
+  
+        // Execute the steps in sequence
+        const sessionId = await fetchSession(); // Fetch the session ID
+        await createCorpus(sessionId); // Use the session ID to create the corpus
       } catch (error) {
-        console.error("Error fetching session:", error);
-        setMessage("An error occurred");
+        console.error("Error:", error);
+        setMessage(error.message || "An unexpected error occurred when trying to ");
       }
     };
-
-    fetchSession();
+  
+    fetchAndCreateCorpus(); // Trigger the combined function
   }, []);
+  
 
   // Highlight unseen messages on initial render and scrolling
   useEffect(() => {
