@@ -15,7 +15,8 @@ export default async function handler(req, res) {
       },
       "generation": {
         "generation_preset_name": "vectara-experimental-summary-ext-2023-12-11-med",
-        "max_used_search_results": 3,
+        "response_language": "eng",
+        "max_used_search_results": 3, 
         "max_response_characters": 2048,
         "model_parameters": {
           "max_tokens": 2048

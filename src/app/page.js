@@ -159,7 +159,33 @@ export default function Home() {
       });
     }
 
-    // TODO: Call Vectara API to generate post
+    // Call Vectara API to generate post
+    async function callVectaraAPI(query, corpusKey) {
+      const data = {
+        query: query,
+        corpusKey: corpusKey
+      };
+    
+      try {
+        const response = await fetch('http://localhost:3000/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+    
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+    
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (error) {
+        console.error('Error calling Vectara API:', error);
+      }
+    }
+    callVectaraAPI(input, sessionCookie);
 
     // Reset input field
     setInput("");
