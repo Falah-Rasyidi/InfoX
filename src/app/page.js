@@ -43,7 +43,7 @@ export default function Home() {
         body: JSON.stringify({ prompt: input }),
       });
       const data = await res.json();
-      
+
       messages.unshift({ text: data.message.message, isBot: true, seen: false })
       messages.unshift({ text: input, isBot: false, seen: false })
       setMessages(messages)
@@ -75,21 +75,50 @@ export default function Home() {
           </p>
           <form
             onSubmit={handleSubmit}
-            className="flex justify-center items-center gap-4"
+            className="flex flex-col justify-center items-center gap-4"
           >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask your question here..."
-              className="w-1/2 p-4 text-black rounded-lg"
-            />
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
-            >
-              Send
-            </button>
+            <div className="flex w-full gap-4">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Enter a topic you'd like to know about..."
+                className="w-full p-4 text-black rounded-lg"
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
+              >
+                Send
+              </button>
+            </div>
+            <div className="flex gap-4 justify-center">
+              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+                <option selected disabled>Platform</option>
+                <option>Facebook</option>
+                <option>Instagram</option>
+                <option>LinkedIn</option>
+                <option>Reddit</option>
+                <option>Twitter</option>
+              </select>
+
+              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+                <option selected disabled>Format</option>
+                <option>Post</option>
+                <option>Image</option>
+                <option>Video</option>
+                <option>Meme</option>
+              </select>
+
+              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+                <option selected disabled>Tone</option>
+                <option>Formal</option>
+                <option>Casual</option>
+                <option>Inspirational</option>
+                <option>Humorous</option>
+                <option>Authoratative</option>
+              </select>
+            </div>
           </form>
         </div>
       </div>
