@@ -76,7 +76,6 @@ export default function Home() {
   
           const data = await response.json();
           console.log("Corpus creation response:", data);
-          setMessage("Corpus created successfully");
         };
   
         // Execute the steps in sequence
@@ -84,7 +83,6 @@ export default function Home() {
         await createCorpus(sessionId); // Use the session ID to create the corpus
       } catch (error) {
         console.error("Error:", error);
-        setMessage(error.message || "An unexpected error occurred when trying to ");
       }
     };
   
