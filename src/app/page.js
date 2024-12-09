@@ -93,7 +93,7 @@ export default function Home() {
             className="my-auto mx-auto w-1/2"
           />
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-black text-400">Info<sup>X</sup></span>
+            Welcome to <span className="text-customGreen text-400">Info<sup>X</sup></span>
           </h1>
           <p className="text-lg text-white-300 mb-8">
             Your gateway to AI-powered posts. Type in your topics and let the magic happen.
@@ -172,7 +172,7 @@ export default function Home() {
           </h2>
           <button
             onClick={toggleMode}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+            className="px-4 py-2 bg-customOrange bg-500 text-white rounded-lg font-semibold hover:bg-customGreen"
           >
             {isNewsMode ? "Switch to Chat History" : "Switch to News Articles"}
           </button>
@@ -184,7 +184,7 @@ export default function Home() {
             {topics.map((topic, idx) => (
               <div
                 key={idx}
-                className="p-4 bg-customOrange bg-200 rounded-lg shadow-md flex flex-col gap-2"
+                className="p-4 bg-customWhite bg-200 rounded-lg shadow-md flex flex-col gap-2"
               >
                 <div className="text-orange-900 font-semibold">
                   News Topic: <span className="italic">{topic}</span>
