@@ -51,10 +51,11 @@ async def extract(request: RequestModel):
 
 @app.post("/retrieve")
 async def retrieve(request: RequestModel):
+    prompt = request.prompt
     articles: list = []
 
     # Fetch articles from The Guardian
-    endpoint = "https://content.guardianapis.com/search?q=football&api-key=f76306d2-0a71-41c7-9271-1d2a405b8b61"
+    endpoint = f"https://content.guardianapis.com/search?q={prompt}&api-key=f76306d2-0a71-41c7-9271-1d2a405b8b61"
     response = requests.get(endpoint)
         
     if response.status_code == 200:
@@ -85,7 +86,7 @@ async def retrieve(request: RequestModel):
                 pass
     
     # Fetch articles from News API
-    endpoint = "https://newsapi.org/v2/everything?q=tesla&from=2024-11-09&sortBy=publishedAt&apiKey=e6782b4eb6ed4ec6a943526bcc54b8e6"
+    endpoint = f"https://newsapi.org/v2/everything?q={prompt}&from=2024-11-09&sortBy=publishedAt&apiKey=e6782b4eb6ed4ec6a943526bcc54b8e6"
     response = requests.get(endpoint)
 
     if response.status_code == 200:
@@ -112,7 +113,7 @@ async def retrieve(request: RequestModel):
                 pass
     
     # Fetch articles from News Data
-    endpoint = "https://newsdata.io/api/1/latest?apikey=pub_61660406963f4c81935fba712030890a7e333&q=football&country=au,us&language=en"
+    endpoint = f"https://newsdata.io/api/1/latest?apikey=pub_61660406963f4c81935fba712030890a7e333&q={prompt}&country=au,us&language=en"
     response = requests.get(endpoint)
 
     if response.status_code == 200:
