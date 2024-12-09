@@ -91,8 +91,9 @@ export default function Home() {
                 Send
               </button>
             </div>
+            
             <div className="flex gap-4 justify-center">
-              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
                 <option selected disabled>Platform</option>
                 <option>Facebook</option>
                 <option>Instagram</option>
@@ -101,7 +102,7 @@ export default function Home() {
                 <option>Twitter</option>
               </select>
 
-              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
                 <option selected disabled>Format</option>
                 <option>Post</option>
                 <option>Image</option>
@@ -109,7 +110,7 @@ export default function Home() {
                 <option>Meme</option>
               </select>
 
-              <select className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
                 <option selected disabled>Tone</option>
                 <option>Formal</option>
                 <option>Casual</option>
