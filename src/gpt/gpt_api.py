@@ -55,7 +55,7 @@ async def retrieve(request: RequestModel):
                     'url': data['response']['results'][i]['webUrl'],
                     'title': article_parsed.title,
                     'pubdate': data['response']['results'][i]['webPublicationDate'],
-                    'text': article_parsed.text
+                    'text': article_parsed.text.replace('\n', '')
                 })
 
                 # Push to articles list
@@ -83,7 +83,7 @@ async def retrieve(request: RequestModel):
                     'url': data['articles'][i]['url'],
                     'title': article_parsed.title,
                     'pubdate': data['articles'][i]['publishedAt'],
-                    'text': article_parsed.text
+                    'text': article_parsed.text.replace('\n', '')
                 })
 
                 articles.append(article)
@@ -110,7 +110,7 @@ async def retrieve(request: RequestModel):
                     'url': data['results'][i]['link'],
                     'title': article_parsed.title,
                     'pubdate': data['results'][i]['pubDate'],
-                    'text': article_parsed.text
+                    'text': article_parsed.text.replace('\n', '')
                 })
 
                 articles.append(article)
