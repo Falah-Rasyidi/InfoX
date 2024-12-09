@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from duckduckgo_search import DDGS
 from python.rake.rake import *
 from newspaper import Article
+from datetime import datetime
 
 import requests
 import json
@@ -12,6 +13,25 @@ app = FastAPI()
 # Create a request model for incoming prompts
 class RequestModel(BaseModel):
     prompt: str
+
+def transform_date(date_str: str):
+    """
+    Transforms a date string into the format: '08 December, 2024'
+    Accepts formats: '2024-12-08 22:47:16' or '2024-12-08T09:33:00Z'
+    """
+    try:
+        # Normalize input: remove 'T' and 'Z' if present
+        normalized_date = date_str.replace("T", " ").replace("Z", "")
+        
+        # Parse the date string into a datetime object
+        date_obj = datetime.strptime(normalized_date, "%Y-%m-%d %H:%M:%S")
+        
+        # Format the date into the desired format
+        formatted_date = date_obj.strftime("%d %B, %Y")
+        
+        return formatted_date
+    except ValueError as e:
+        return f"Invalid date format: {e}"
 
 @app.post("/extract")
 async def extract(request: RequestModel):
@@ -54,7 +74,7 @@ async def retrieve(request: RequestModel):
                 article.update({
                     'url': data['response']['results'][i]['webUrl'],
                     'title': article_parsed.title,
-                    'pubdate': data['response']['results'][i]['webPublicationDate'],
+                    'pubdate': transform_date(data['response']['results'][i]['webPublicationDate']),
                     'text': article_parsed.text.replace('\n', '')
                 })
 
@@ -82,7 +102,7 @@ async def retrieve(request: RequestModel):
                 article.update({
                     'url': data['articles'][i]['url'],
                     'title': article_parsed.title,
-                    'pubdate': data['articles'][i]['publishedAt'],
+                    'pubdate': transform_date(data['articles'][i]['publishedAt']),
                     'text': article_parsed.text.replace('\n', '')
                 })
 
@@ -109,7 +129,7 @@ async def retrieve(request: RequestModel):
                 article.update({
                     'url': data['results'][i]['link'],
                     'title': article_parsed.title,
-                    'pubdate': data['results'][i]['pubDate'],
+                    'pubdate': transform_date(data['results'][i]['pubDate']),
                     'text': article_parsed.text.replace('\n', '')
                 })
 
