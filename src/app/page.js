@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [sessionCookie, setSessionCookie] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
 
@@ -80,6 +81,7 @@ export default function Home() {
   
         // Execute the steps in sequence
         const sessionId = await fetchSession(); // Fetch the session ID
+        setSessionCookie(sessionId); // Store the session ID in state
         await createCorpus(sessionId); // Use the session ID to create the corpus
       } catch (error) {
         console.error("Error:", error);
@@ -102,8 +104,9 @@ export default function Home() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Remove Chat API call
     if (!input.trim()) return;
+    let data = null;
+
     try {
       const res = await fetch("/api/retrieve", {
         method: "POST",
@@ -113,42 +116,53 @@ export default function Home() {
         body: JSON.stringify({ prompt: input }),
       });
 
-      const data = await res.json();
-
-      // Commented out bc can't render array of article objects until fed into vectara
-      // setMessages([
-      //   { text: input, isBot: false, seen: false },
-      //   { text: data.message.message, isBot: true, seen: false },
-      //   ...messages,
-      // ]);
-
-      // TODO: Upload news articles to current session
-      // data.message is an array of article objects
-
-      setInput("");
+      data = await res.json();
     } catch (error) {
-      console.error("Error during /api/retrieve fetch:", error);
+      console.log("Complication during /api/retrieve fetch:", error);
     }
-    // Call Vectara API to generate post
-    //   try {
-    //     const res = await fetch("/api/generate", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({ prompt: input }),
-    //     });
-    //     const data = await res.json();
 
-    //     setMessages([
-    //       { text: input, isBot: false, seen: false },
-    //       { text: data.message.message, isBot: true, seen: false },
-    //       ...messages,
-    //     ]);
-    //     setInput("");
-    //   } catch (error) {
-    //     console.error("Error during /api/generate fetch:", error);
-    // };
+    // Upload news articles to current session
+    if (data) {
+      data.message.message.forEach(async (article) => {
+        // Define the document data based on the article
+        const documentData = {
+          id: article.url, // Assuming each article has an id property
+          type: "core", // Assuming a fixed type for the document
+          document_parts: [
+            {
+              text: article.text, // Assuming each article has a text property
+              context: article.title, // Assuming each article has a context property
+            },
+          ],
+        };
+    
+        // Make a POST request to the upload.js handler
+        try {
+          const uploadRes = await fetch(`/api/upload?corpus_key=${sessionCookie}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(documentData),
+          });
+    
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json();
+            console.error("Error uploading document:", errorData.message);
+          } else {
+            const uploadData = await uploadRes.json();
+            console.log("Document uploaded successfully:", uploadData);
+          }
+        } catch (uploadError) {
+          console.error("Error during document upload:", uploadError);
+        }
+      });
+    }
+
+    // TODO: Call Vectara API to generate post
+
+    // Reset input field
+    setInput("");
   };
 
   // Scroll to the chat history section
