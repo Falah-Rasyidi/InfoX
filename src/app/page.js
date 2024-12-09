@@ -46,17 +46,17 @@ export default function Home() {
             method: "GET",
             credentials: "same-origin", // Include cookies with the request
           });
-  
+
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || "Failed to fetch session");
           }
-  
+
           const data = await response.json();
           console.log("Session data:", data);
           return data.sessionId; // Return the session ID
         };
-  
+
         // Create a corpus
         const createCorpus = async (sessionId) => {
           const response = await fetch("/api/corpus", {
@@ -69,16 +69,16 @@ export default function Home() {
               description: `Corpus created for client ${sessionId}'s session.`,
             }),
           });
-  
+
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || "Failed to create corpus");
           }
-  
+
           const data = await response.json();
           console.log("Corpus creation response:", data);
         };
-  
+
         // Execute the steps in sequence
         const sessionId = await fetchSession(); // Fetch the session ID
         setSessionCookie(sessionId); // Store the session ID in state
@@ -87,10 +87,9 @@ export default function Home() {
         console.error("Error:", error);
       }
     };
-  
+
     fetchAndCreateCorpus(); // Trigger the combined function
   }, []);
-  
 
   // Highlight unseen messages on initial render and scrolling
   useEffect(() => {
@@ -135,23 +134,25 @@ export default function Home() {
             },
           ],
         };
-    
+
         // Make a POST request to the upload.js handler
         try {
-          const uploadRes = await fetch(`/api/upload?corpus_key=${sessionCookie}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(documentData),
-          });
-    
+          const uploadRes = await fetch(
+            `/api/upload?corpus_key=${sessionCookie}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(documentData),
+            }
+          );
+
           if (!uploadRes.ok) {
             const errorData = await uploadRes.json();
             console.error("Error uploading document:", errorData.message);
           } else {
             const uploadData = await uploadRes.json();
-            console.log("Document uploaded successfully:", uploadData);
           }
         } catch (uploadError) {
           console.error("Error during document upload:", uploadError);
@@ -163,29 +164,37 @@ export default function Home() {
     async function callVectaraAPI(query, corpusKey) {
       const data = {
         query: query,
-        corpusKey: corpusKey
+        corpusKey: corpusKey,
       };
-    
+
       try {
-        const response = await fetch('http://localhost:3000/api/generate', {
-          method: 'POST',
+        const response = await fetch("http://localhost:3000/api/generate", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         });
-    
+
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
-    
+
         const responseData = await response.json();
-        console.log(responseData);
+        console.log("Vectara API response:", responseData);
+        return responseData.answer;
       } catch (error) {
-        console.error('Error calling Vectara API:', error);
+        console.error("Error calling Vectara API:", error);
+        return null;
       }
     }
-    callVectaraAPI(input, sessionCookie);
+    callVectaraAPI(input, sessionCookie).then((answer) => {
+      setMessages([
+        { text: input, isBot: false, seen: false },
+        { text: answer, isBot: true, seen: false },
+        ...messages,
+      ]);
+    });
 
     // Reset input field
     setInput("");
@@ -237,8 +246,14 @@ export default function Home() {
             </div>
 
             <div className="flex gap-4 justify-center">
-              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Platform">
-                <option value="Platform" disabled>Platform</option>
+              <select
+                id="platform"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                defaultValue="Platform"
+              >
+                <option value="Platform" disabled>
+                  Platform
+                </option>
                 <option value="Facebook">Facebook</option>
                 <option value="Instagram">Instagram</option>
                 <option value="LinkedIn">LinkedIn</option>
@@ -246,16 +261,28 @@ export default function Home() {
                 <option value="Twitter">Twitter</option>
               </select>
 
-              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Format">
-                <option value="Format" disabled>Format</option>
+              <select
+                id="format"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                defaultValue="Format"
+              >
+                <option value="Format" disabled>
+                  Format
+                </option>
                 <option value="Post">Post</option>
                 <option value="Image">Image</option>
                 <option value="Video">Video</option>
                 <option value="Meme">Meme</option>
               </select>
 
-              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Tone">
-                <option value="Tone" disabled>Tone</option>
+              <select
+                id="tone"
+                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                defaultValue="Tone"
+              >
+                <option value="Tone" disabled>
+                  Tone
+                </option>
                 <option value="Formal">Formal</option>
                 <option value="Casual">Casual</option>
                 <option value="Inspirational">Inspirational</option>
