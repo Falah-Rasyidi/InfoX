@@ -35,6 +35,61 @@ export default function Home() {
     }
   };
 
+  // Fetch session data on initial render
+  useEffect(() => {
+    const fetchAndCreateCorpus = async () => {
+      try {
+        // Fetch the session ID
+        const fetchSession = async () => {
+          const response = await fetch("/api/session", {
+            method: "GET",
+            credentials: "same-origin", // Include cookies with the request
+          });
+  
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to fetch session");
+          }
+  
+          const data = await response.json();
+          console.log("Session data:", data);
+          return data.sessionId; // Return the session ID
+        };
+  
+        // Create a corpus
+        const createCorpus = async (sessionId) => {
+          const response = await fetch("/api/corpus", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              corpusKey: sessionId, // Use sessionId as the corpusKey
+              description: `Corpus created for client ${sessionId}'s session.`,
+            }),
+          });
+  
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to create corpus");
+          }
+  
+          const data = await response.json();
+          console.log("Corpus creation response:", data);
+        };
+  
+        // Execute the steps in sequence
+        const sessionId = await fetchSession(); // Fetch the session ID
+        await createCorpus(sessionId); // Use the session ID to create the corpus
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+  
+    fetchAndCreateCorpus(); // Trigger the combined function
+  }, []);
+  
+
   // Highlight unseen messages on initial render and scrolling
   useEffect(() => {
     const unseenExists = messages.some((msg) => !msg.seen);
@@ -47,7 +102,8 @@ export default function Home() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return; // Avoid empty messages
+    // TODO: Remove Chat API call
+    if (!input.trim()) return;
     try {
       const res = await fetch("/api/retrieve", {
         method: "POST",
@@ -68,7 +124,52 @@ export default function Home() {
     } catch (error) {
       console.error("Error during /api/retrieve fetch:", error);
     }
+    // Call Vectara API to generate post
+    //   try {
+    //     const res = await fetch("/api/generate", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ prompt: input }),
+    //     });
+    //     const data = await res.json();
+
+    //     setMessages([
+    //       { text: input, isBot: false, seen: false },
+    //       { text: data.message.message, isBot: true, seen: false },
+    //       ...messages,
+    //     ]);
+    //     setInput("");
+    //   } catch (error) {
+    //     console.error("Error during /api/generate fetch:", error);
+    // };
   };
+
+  const handleExit = async () => {
+    try {
+      // Make a request to the /api/exit endpoint to clear the session
+      const response = await fetch("/api/exit", {
+        method: "GET",
+        credentials: "same-origin", // Include cookies with the request
+      });
+  
+      // Parse the JSON response
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Handle success (session cleared)
+        console.log(data.message); // "Session cleared"
+        // Optionally, update UI state or redirect
+      } else {
+        // Handle error if needed
+        console.error("Error clearing session:", data.message);
+      }
+    } catch (error) {
+      console.error("Error during exit:", error);
+    }
+  };
+  
 
   // Scroll to the chat history section
   const scrollToChatHistory = () => {
@@ -86,11 +187,22 @@ export default function Home() {
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-blue-400">Info<sup>X</sup></span>
+            Welcome to{" "}
+            <span className="text-blue-400">
+              Info<sup>X</sup>
+            </span>
           </h1>
           <p className="text-lg text-gray-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
+            Your gateway to AI-powered posts. Type in your topics and let the
+            magic happen.
           </p>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
+            onClick={handleExit}
+          >
+            Remove session
+          </button>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col justify-center items-center gap-4"
@@ -110,7 +222,7 @@ export default function Home() {
                 Send
               </button>
             </div>
-            
+
             <div className="flex gap-4 justify-center">
               <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Platform">
                 <option value="Platform" disabled>Platform</option>
