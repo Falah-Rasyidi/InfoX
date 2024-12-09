@@ -44,8 +44,9 @@ export default function Home() {
       });
       const data = await res.json();
 
-      messages.unshift({ text: data.message.message, isBot: true, seen: false })
-      messages.unshift({ text: input, isBot: false, seen: false })
+      // Commented out bc can't render array of article objects for now
+      // messages.unshift({ text: data.message.message, isBot: true, seen: false })
+      // messages.unshift({ text: input, isBot: false, seen: false })
       setMessages(messages)
       setInput("");
     } catch (error) {
