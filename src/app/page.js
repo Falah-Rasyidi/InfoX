@@ -1,12 +1,25 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from 'next/image'
 
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
+  const [topics, setTopics] = useState([
+    "Trending topic 1!",
+    "Trending topic 2!",
+    "Trending topic 3!",
+  ]); // yap state about trending news topics
+  const [platform, setPlatform] = useState("");
+  const [format, setFormat] = useState("");
+  const [tone, setTone] = useState("");
+
+  const handlePlatformChange = (e) => setPlatform(e.target.value);
+  const handleFormatChange = (e) => setFormat(e.target.value);
+  const handleToneChange = (e) => setTone(e.target.value);
 
   // Mark all messages as seen when scrolled to the bottom
   const handleScroll = () => {
@@ -62,14 +75,21 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="bg-custom-gradient h-screen">
       {/* Hero Section */}
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
+          <Image 
+            src="/image.png"
+            alt="Mascot"
+            width={300}
+            height={300}
+            className="my-auto mx-auto w-1/2"
+          />
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-blue-400">Info<sup>X</sup></span>
+            Welcome to <span className="text-black text-400">Info<sup>X</sup></span>
           </h1>
-          <p className="text-lg text-gray-300 mb-8">
+          <p className="text-lg text-white-300 mb-8">
             Your gateway to AI-powered posts. Type in your topics and let the magic happen. 
           </p>
           <form
@@ -86,14 +106,19 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
+                className="bg-customOrange bg-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-customGreen bg-600"
               >
                 Send
               </button>
             </div>
             
             <div className="flex gap-4 justify-center">
-              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select 
+                id="platform" 
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={platform}
+                onChange={handlePlatformChange}
+              >
                 <option selected disabled>Platform</option>
                 <option>Facebook</option>
                 <option>Instagram</option>
@@ -102,7 +127,12 @@ export default function Home() {
                 <option>Twitter</option>
               </select>
 
-              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select
+                id="format"
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={format}
+                onChange={handleFormatChange}
+              >
                 <option selected disabled>Format</option>
                 <option>Post</option>
                 <option>Image</option>
@@ -110,7 +140,12 @@ export default function Home() {
                 <option>Meme</option>
               </select>
 
-              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
+              <select
+                id="tone"
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={tone}
+                onChange={handleToneChange}
+              >
                 <option selected disabled>Tone</option>
                 <option>Formal</option>
                 <option>Casual</option>
