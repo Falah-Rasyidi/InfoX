@@ -161,7 +161,7 @@ export default function Home() {
       {/* Chat Section */}
       <div
         ref={chatHistoryRef}
-        className="container mx-auto my-8 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg"
+        className="container mx-auto my-10 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg"
       >
         <h2 className="text-2xl font-bold mb-4 text-white">Chat History</h2>
         <div className="space-y-4">
