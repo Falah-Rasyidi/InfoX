@@ -70,8 +70,7 @@ export default function Home() {
             Welcome to <span className="text-blue-400">InfoX</span>
           </h1>
           <p className="text-lg text-gray-300 mb-8">
-            Your gateway to AI-powered conversations. Type in your thoughts and
-            let the magic happen.
+            Your gateway to AI-powered posts. Type in your topics and let the magic happen. 
           </p>
           <form
             onSubmit={handleSubmit}
