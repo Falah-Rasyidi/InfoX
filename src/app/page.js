@@ -112,30 +112,30 @@ export default function Home() {
             </div>
             
             <div className="flex gap-4 justify-center">
-              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Platform</option>
-                <option>Facebook</option>
-                <option>Instagram</option>
-                <option>LinkedIn</option>
-                <option>Reddit</option>
-                <option>Twitter</option>
+              <select id="platform" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Platform">
+                <option value="Platform" disabled>Platform</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Instagram">Instagram</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Reddit">Reddit</option>
+                <option value="Twitter">Twitter</option>
               </select>
 
-              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Format</option>
-                <option>Post</option>
-                <option>Image</option>
-                <option>Video</option>
-                <option>Meme</option>
+              <select id="format" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Format">
+                <option value="Format" disabled>Format</option>
+                <option value="Post">Post</option>
+                <option value="Image">Image</option>
+                <option value="Video">Video</option>
+                <option value="Meme">Meme</option>
               </select>
 
-              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500">
-                <option selected disabled>Tone</option>
-                <option>Formal</option>
-                <option>Casual</option>
-                <option>Inspirational</option>
-                <option>Humorous</option>
-                <option>Authoratative</option>
+              <select id="tone" className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500" defaultValue="Tone">
+                <option value="Tone" disabled>Tone</option>
+                <option value="Formal">Formal</option>
+                <option value="Casual">Casual</option>
+                <option value="Inspirational">Inspirational</option>
+                <option value="Humorous">Humorous</option>
+                <option value="Authoratative">Authoratative</option>
               </select>
             </div>
           </form>
