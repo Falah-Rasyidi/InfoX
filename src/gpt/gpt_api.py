@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from duckduckgo_search import DDGS
 from python.rake.rake import *
+from newspaper import Article
 
 app = FastAPI()
 
@@ -24,6 +25,20 @@ async def extract(request: RequestModel):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
+
+@app.post("/retrieve")
+async def retrieve(request: RequestModel):
+    # Fetch articles from The Guardian
+    url = "https://www.thescottishsun.co.uk/sport/13976409/john-higgins-snooker-soap-dallas-specialist-subject-mastermind/"
+
+    article = Article(url, language="en")
+    article.download()
+    article.parse()
+
+    print("ARTICLE TEXT")
+    print(f"==={article.text}===")
+
+    return {"message": article.text}
 
 @app.post("/chat")
 async def chat(request: RequestModel):
