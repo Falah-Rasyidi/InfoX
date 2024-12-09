@@ -49,7 +49,7 @@ export default function Home() {
     e.preventDefault();
     if (!input.trim()) return; // Avoid empty messages
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/retrieve", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,14 +58,15 @@ export default function Home() {
       });
       const data = await res.json();
 
-      setMessages([
-        { text: input, isBot: false, seen: false },
-        { text: data.message.message, isBot: true, seen: false },
-        ...messages,
-      ]);
+      // Commented out bc can't render array of article objects until fed into vectara
+      // setMessages([
+      //   { text: input, isBot: false, seen: false },
+      //   { text: data.message.message, isBot: true, seen: false },
+      //   ...messages,
+      // ]);
       setInput("");
     } catch (error) {
-      console.error("Error during /api/chat fetch:", error);
+      console.error("Error during /api/retrieve fetch:", error);
     }
   };
 
