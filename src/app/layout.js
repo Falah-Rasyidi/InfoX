@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
         {/* Header */}
         <header className="bg-gray-800 text-white flex-none">
           <nav className="container mx-auto flex justify-between items-center py-4 px-6">
-            <div className="text-2xl font-bold">InfoX</div>
+            <div className="text-2xl font-bold">Info<sup>X</sup></div>
             <ul className="flex space-x-4">
               <li>
                 <a href="#" className="hover:underline">

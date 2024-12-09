@@ -67,7 +67,7 @@ export default function Home() {
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-blue-400">InfoX</span>
+            Welcome to <span className="text-blue-400">Info<sup>X</sup></span>
           </h1>
           <p className="text-lg text-gray-300 mb-8">
             Your gateway to AI-powered posts. Type in your topics and let the magic happen. 
