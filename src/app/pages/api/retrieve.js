@@ -11,7 +11,8 @@ export default async function handler(req, res) {
                 },
                 body: JSON.stringify({ prompt }),
             });
-            console.log(data)
+
+            const data = await response.json();
 
             res.status(200).json({ message: data });
         } catch (error) {

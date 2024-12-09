@@ -36,7 +36,7 @@ async def retrieve(request: RequestModel):
     # Fetch articles from The Guardian
     endpoint = "https://content.guardianapis.com/search?q=football&api-key=f76306d2-0a71-41c7-9271-1d2a405b8b61"
     response = requests.get(endpoint)
-
+        
     if response.status_code == 200:
         data = response.json()
 
@@ -46,19 +46,23 @@ async def retrieve(request: RequestModel):
 
             # Download and parse article
             article_parsed = Article(data['response']['results'][i]['webUrl'], language="en")
-            article_parsed.download()
-            article_parsed.parse()
+            try:
+                article_parsed.download()
+                article_parsed.parse()
 
-            # Store article information in a dictionary
-            article.update({
-                'url': data['response']['results'][i]['webUrl'],
-                'title': article_parsed.title,
-                'pubdate': data['response']['results'][i]['webPublicationDate'],
-                'text': article_parsed.text
-            })
+                # Store article information in a dictionary
+                article.update({
+                    'url': data['response']['results'][i]['webUrl'],
+                    'title': article_parsed.title,
+                    'pubdate': data['response']['results'][i]['webPublicationDate'],
+                    'text': article_parsed.text
+                })
 
-            # Push to articles list
-            articles.append(article)
+                # Push to articles list
+                articles.append(article)
+            except:
+                print("An error occurred while fetching an article from The Guardian")
+                pass
     
     # Fetch articles from News API
     endpoint = "https://newsapi.org/v2/everything?q=tesla&from=2024-11-09&sortBy=publishedAt&apiKey=e6782b4eb6ed4ec6a943526bcc54b8e6"
@@ -71,17 +75,21 @@ async def retrieve(request: RequestModel):
             article = { 'url': "", 'title': "", 'pubdate': "", 'text': "" }
 
             article_parsed = Article(data['articles'][i]['url'], language="en")
-            article_parsed.download()
-            article_parsed.parse()
+            try:
+                article_parsed.download()
+                article_parsed.parse()
 
-            article.update({
-                'url': data['articles'][i]['url'],
-                'title': article_parsed.title,
-                'pubdate': data['articles'][i]['publishedAt'],
-                'text': article_parsed.text
-            })
+                article.update({
+                    'url': data['articles'][i]['url'],
+                    'title': article_parsed.title,
+                    'pubdate': data['articles'][i]['publishedAt'],
+                    'text': article_parsed.text
+                })
 
-            articles.append(article)
+                articles.append(article)
+            except:
+                print("An error occurred while fetching an article from News API")
+                pass
     
     # Fetch articles from News Data
     endpoint = "https://newsdata.io/api/1/latest?apikey=pub_61660406963f4c81935fba712030890a7e333&q=football&country=au,us&language=en"
@@ -94,19 +102,23 @@ async def retrieve(request: RequestModel):
             article = { 'url': "", 'title': "", 'pubdate': "", 'text': "" }
 
             article_parsed = Article(data['results'][i]['link'], language="en")
-            article_parsed.download()
-            article_parsed.parse()
+            try:
+                article_parsed.download()
+                article_parsed.parse()
 
-            article.update({
-                'url': data['results'][i]['link'],
-                'title': article_parsed.title,
-                'pubdate': data['results'][i]['pubDate'],
-                'text': article_parsed.text
-            })
+                article.update({
+                    'url': data['results'][i]['link'],
+                    'title': article_parsed.title,
+                    'pubdate': data['results'][i]['pubDate'],
+                    'text': article_parsed.text
+                })
 
-            articles.append(article)
+                articles.append(article)
+            except:
+                print("An error occurred while fetching an article from News Data")
+                pass
 
-    return articles
+    return { "message": articles }
 
 @app.post("/chat")
 async def chat(request: RequestModel):
