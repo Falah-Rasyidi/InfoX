@@ -2,7 +2,7 @@
 You will need to supply your own Vectara API key in an .env file at the root of the repository in order for InfoX to work.
 ```env
 VECTARA_PERSONAL_API_KEY=<api-key>
-SESSION_EXPIRATION_TIME=<custom-session-expiry>
+SESSION_EXPIRATION_TIME=<custom-session-expiry-in-seconds>
 ```
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
