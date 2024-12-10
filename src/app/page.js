@@ -209,9 +209,15 @@ export default function Home() {
         return null;
       }
     }
-    callVectaraAPI(input, sessionCookie).then((answer) => {
+
+    // TODO: Change input to  “Write a <platform> post about the latest <topic>
+    // news in a <tone> tone. Only provide the post and nothing else.
+    // Do not provide any inline citations either.“
+    const modifiedInput = `Write a ${platform} post about the latest ${input} news in an ${tone} tone. Only provide the post and nothing else. Do not provide any inline citations either.`;
+    const shownInput = `Write a ${platform} post about the latest ${input} news in a ${tone} tone.`
+    callVectaraAPI(modifiedInput, sessionCookie).then((answer) => {
       setMessages([
-        { text: input, isBot: false, seen: false },
+        { text: shownInput, isBot: false, seen: false },
         { text: answer, isBot: true, seen: false },
         ...messages,
       ]);
@@ -244,10 +250,14 @@ export default function Home() {
             className="my-auto mx-auto w-1/2"
           />
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to <span className="text-customGreen text-400">Info<sup>X</sup></span>
+            Welcome to{" "}
+            <span className="text-customGreen text-400">
+              Info<sup>X</sup>
+            </span>
           </h1>
           <p className="text-lg text-white-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
+            Your gateway to AI-powered posts. Type in your topics and let the
+            magic happen.
           </p>
           <form
             onSubmit={handleSubmit}
@@ -277,7 +287,9 @@ export default function Home() {
                 onChange={handlePlatformChange}
                 defaultValue="Platform"
               >
-                <option value="Platform" disabled>Platform</option>
+                <option value="Platform" disabled>
+                  Pick a Platform
+                </option>
                 <option value="Facebook">Facebook</option>
                 <option value="Instagram">Instagram</option>
                 <option value="LinkedIn">LinkedIn</option>
@@ -292,7 +304,9 @@ export default function Home() {
                 onChange={handleFormatChange}
                 defaultValue="Format"
               >
-              <option value="Format" disabled>Format</option>
+                <option value="Format" disabled>
+                  Pick a Format
+                </option>
                 <option value="Post">Post</option>
                 <option value="Image">Image</option>
                 <option value="Video">Video</option>
@@ -306,12 +320,14 @@ export default function Home() {
                 onChange={handleToneChange}
                 defaultValue="Tone"
               >
-                <option value="Tone" disabled>Tone</option>
+                <option value="Tone" disabled>
+                  Pick a Tone
+                </option>
                 <option value="Formal">Formal</option>
                 <option value="Casual">Casual</option>
                 <option value="Inspirational">Inspirational</option>
                 <option value="Humorous">Humorous</option>
-                <option value="Authoratative">Authoratative</option>
+                <option value="Authoratative">Authoritative</option>
               </select>
             </div>
           </form>
