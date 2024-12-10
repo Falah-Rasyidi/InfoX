@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -8,6 +9,24 @@ export default function Home() {
   const [sessionCookie, setSessionCookie] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
+  const [topics, setTopics] = useState([
+    "Trending topic 1!",
+    "Trending topic 2!",
+    "Trending topic 3!",
+  ]); // State about trending news topics
+  const [platform, setPlatform] = useState("");
+  const [format, setFormat] = useState("");
+  const [tone, setTone] = useState("");
+
+  // Toggle button state for switching between chat and news mode
+  const [isNewsMode, setIsNewsMode] = useState(false);
+  const toggleMode = () => {
+    setIsNewsMode((prevMode) => !prevMode);
+  };
+
+  const handlePlatformChange = (e) => setPlatform(e.target.value);
+  const handleFormatChange = (e) => setFormat(e.target.value);
+  const handleToneChange = (e) => setTone(e.target.value);
 
   // Mark messages as seen when they fit in the user's viewport
   const handleScroll = () => {
@@ -211,19 +230,22 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="bg-custom-gradient h-screen">
       {/* Hero Section */}
       <div className="flex items-center justify-center min-h-screen text-center px-4">
         <div>
+          <Image
+            src="/image.png"
+            alt="Mascot"
+            width={300}
+            height={300}
+            className="my-auto mx-auto w-1/2"
+          />
           <h1 className="text-5xl font-extrabold mb-6 text-white">
-            Welcome to{" "}
-            <span className="text-blue-400">
-              Info<sup>X</sup>
-            </span>
+            Welcome to <span className="text-customGreen text-400">Info<sup>X</sup></span>
           </h1>
-          <p className="text-lg text-gray-300 mb-8">
-            Your gateway to AI-powered posts. Type in your topics and let the
-            magic happen.
+          <p className="text-lg text-white-300 mb-8">
+            Your gateway to AI-powered posts. Type in your topics and let the magic happen.
           </p>
           <form
             onSubmit={handleSubmit}
@@ -239,7 +261,7 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-600"
+                className="bg-customOrange bg-500 text-white px-6 py-4 rounded-lg font-semibold hover:bg-customGreen bg-600"
               >
                 Send
               </button>
@@ -248,12 +270,12 @@ export default function Home() {
             <div className="flex gap-4 justify-center">
               <select
                 id="platform"
-                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={platform}
+                onChange={handlePlatformChange}
                 defaultValue="Platform"
               >
-                <option value="Platform" disabled>
-                  Platform
-                </option>
+                <option value="Platform" disabled>Platform</option>
                 <option value="Facebook">Facebook</option>
                 <option value="Instagram">Instagram</option>
                 <option value="LinkedIn">LinkedIn</option>
@@ -263,12 +285,12 @@ export default function Home() {
 
               <select
                 id="format"
-                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={format}
+                onChange={handleFormatChange}
                 defaultValue="Format"
               >
-                <option value="Format" disabled>
-                  Format
-                </option>
+              <option value="Format" disabled>Format</option>
                 <option value="Post">Post</option>
                 <option value="Image">Image</option>
                 <option value="Video">Video</option>
@@ -277,12 +299,12 @@ export default function Home() {
 
               <select
                 id="tone"
-                className="bg-blue-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-blue-500"
+                className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
+                value={tone}
+                onChange={handleToneChange}
                 defaultValue="Tone"
               >
-                <option value="Tone" disabled>
-                  Tone
-                </option>
+                <option value="Tone" disabled>Tone</option>
                 <option value="Formal">Formal</option>
                 <option value="Casual">Casual</option>
                 <option value="Inspirational">Inspirational</option>
@@ -294,27 +316,54 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Chat Section */}
-      <div
-        ref={chatHistoryRef}
-        className="container mx-auto my-8 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-white">Chat History</h2>
-        <div className="space-y-4">
-          {messages.map((msg, idx) => (
-            <div
-              id={`message-${idx}`}
-              key={idx}
-              className={`p-4 rounded-lg message ${
-                msg.isBot
-                  ? "bg-gray-800 text-white text-left"
-                  : "bg-blue-500 text-white text-right"
-              } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
-            >
-              <p>{msg.text}</p>
-            </div>
-          ))}
+      {/* Chat Section with Toggle */}
+      <div className="container mx-auto my-20 px-4 py-6 bg-gradient-to-br from-gray-700 via-slate-800 to-gray-900 rounded-xl shadow-2xl backdrop-blur-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-white">
+            {isNewsMode ? "News Articles" : "Chat History"}
+          </h2>
+          <button
+            onClick={toggleMode}
+            className="px-4 py-2 bg-customOrange bg-500 text-white rounded-lg font-semibold hover:bg-customGreen"
+          >
+            {isNewsMode ? "Switch to Chat History" : "Switch to News Articles"}
+          </button>
         </div>
+
+        {/* Content */}
+        {isNewsMode ? (
+          <div className="grid gap-4">
+            {topics.map((topic, idx) => (
+              <div
+                key={idx}
+                className="p-4 bg-customWhite bg-200 rounded-lg shadow-md flex flex-col gap-2"
+              >
+                <div className="text-orange-900 font-semibold">
+                  News Topic: <span className="italic">{topic}</span>
+                </div>
+                <p className="text-sm">
+                  {topic}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div ref={chatHistoryRef} className="space-y-4">
+            {messages.map((msg, idx) => (
+              <div
+                id={`message-${idx}`}
+                key={idx}
+                className={`p-4 rounded-lg message ${
+                  msg.isBot
+                    ? "bg-gray-800 text-white text-left"
+                    : "bg-blue-500 text-white text-right"
+                  } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
+              >
+                <p>{msg.text}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Animated Arrow */}
