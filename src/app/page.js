@@ -6,6 +6,7 @@ import Image from "next/image";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
   const [topics, setTopics] = useState([
@@ -134,40 +135,30 @@ export default function Home() {
 
       const data = await res.json();
 
-      // Commented out bc can't render array of article objects until fed into vectara
-      // setMessages([
-      //   { text: input, isBot: false, seen: false },
-      //   { text: data.message.message, isBot: true, seen: false },
-      //   ...messages,
-      // ]);
-
-      // TODO: Upload news articles to current session
-      // data.message is an array of article objects
-
       setInput("");
     } catch (error) {
       console.error("Error during /api/retrieve fetch:", error);
     }
     // Call Vectara API to generate post
-    //   try {
-    //     const res = await fetch("/api/generate", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({ prompt: input }),
-    //     });
-    //     const data = await res.json();
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: input }),
+        });
+        const data = await res.json();
 
-    //     setMessages([
-    //       { text: input, isBot: false, seen: false },
-    //       { text: data.message.message, isBot: true, seen: false },
-    //       ...messages,
-    //     ]);
-    //     setInput("");
-    //   } catch (error) {
-    //     console.error("Error during /api/generate fetch:", error);
-    // };
+        setMessages([
+          { text: input, isBot: false, seen: false },
+          { text: data.message.message, isBot: true, seen: false },
+          ...messages,
+        ]);
+        setInput("");
+      } catch (error) {
+        console.error("Error during /api/generate fetch:", error);
+    };
   };
 
   // Scroll to the chat history section
@@ -283,18 +274,28 @@ export default function Home() {
 
         {/* Content */}
         {isNewsMode ? (
-          <div className="grid gap-4">
-            {topics.map((topic, idx) => (
+          <div className="p-4 flex gap-4 justify-center flex-wrap bg-white">
+            {messages.map((msg, idx) => (
+              // <div
+              //   key={idx}
+              //   className="p-4 bg-customWhite bg-200 rounded-lg shadow-md flex flex-col gap-2"
+              // >
+              //   <div className="text-orange-900 font-semibold">
+              //     News Topic: <span className="italic">{}</span>
+              //   </div>
+              //   <p className="text-sm">
+              //     {topic}
+              //   </p>
+              // </div>
               <div
                 key={idx}
-                className="p-4 bg-customWhite bg-200 rounded-lg shadow-md flex flex-col gap-2"
+                className={`p-4 rounded-lg ${
+                  msg.isBot
+                    ? "bg-gray-800 text-white text-left"
+                    : "bg-blue-500 text-white text-right"
+                } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
               >
-                <div className="text-orange-900 font-semibold">
-                  News Topic: <span className="italic">{topic}</span>
-                </div>
-                <p className="text-sm">
-                  {topic}
-                </p>
+                <p>{msg.text}</p>
               </div>
             ))}
           </div>
