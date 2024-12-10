@@ -5,7 +5,7 @@ VECTARA_PERSONAL_API_KEY=<api-key>
 SESSION_EXPIRATION_TIME=<custom-session-expiry-in-seconds>
 ```
 
-[infox](./infox.png)
+![infox](./infox.png)
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
