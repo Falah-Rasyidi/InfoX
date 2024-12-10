@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [articles, setArticles] = useState([]);
+  const [sessionCookie, setSessionCookie] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
   const [topics, setTopics] = useState([
@@ -65,17 +65,17 @@ export default function Home() {
             method: "GET",
             credentials: "same-origin", // Include cookies with the request
           });
-  
+
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || "Failed to fetch session");
           }
-  
+
           const data = await response.json();
           console.log("Session data:", data);
           return data.sessionId; // Return the session ID
         };
-  
+
         // Create a corpus
         const createCorpus = async (sessionId) => {
           const response = await fetch("/api/corpus", {
@@ -88,27 +88,27 @@ export default function Home() {
               description: `Corpus created for client ${sessionId}'s session.`,
             }),
           });
-  
+
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || "Failed to create corpus");
           }
-  
+
           const data = await response.json();
           console.log("Corpus creation response:", data);
         };
-  
+
         // Execute the steps in sequence
         const sessionId = await fetchSession(); // Fetch the session ID
+        setSessionCookie(sessionId); // Store the session ID in state
         await createCorpus(sessionId); // Use the session ID to create the corpus
       } catch (error) {
         console.error("Error:", error);
       }
     };
-  
+
     fetchAndCreateCorpus(); // Trigger the combined function
   }, []);
-  
 
   // Highlight unseen messages on initial render and scrolling
   useEffect(() => {
@@ -122,8 +122,9 @@ export default function Home() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Remove Chat API call
     if (!input.trim()) return;
+    let data = null;
+
     try {
       const res = await fetch("/api/retrieve", {
         method: "POST",
@@ -133,32 +134,89 @@ export default function Home() {
         body: JSON.stringify({ prompt: input }),
       });
 
-      const data = await res.json();
-
-      setInput("");
+      data = await res.json();
     } catch (error) {
-      console.error("Error during /api/retrieve fetch:", error);
+      console.log("Complication during /api/retrieve fetch:", error);
     }
+
+    // Upload news articles to current session
+    if (data) {
+      data.message.message.forEach(async (article) => {
+        // Define the document data based on the article
+        const documentData = {
+          id: article.url, // Assuming each article has an id property
+          type: "core", // Assuming a fixed type for the document
+          document_parts: [
+            {
+              text: article.text, // Assuming each article has a text property
+              context: article.title, // Assuming each article has a context property
+            },
+          ],
+        };
+
+        // Make a POST request to the upload.js handler
+        try {
+          const uploadRes = await fetch(
+            `/api/upload?corpus_key=${sessionCookie}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(documentData),
+            }
+          );
+
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json();
+            console.error("Error uploading document:", errorData.message);
+          } else {
+            const uploadData = await uploadRes.json();
+          }
+        } catch (uploadError) {
+          console.error("Error during document upload:", uploadError);
+        }
+      });
+    }
+
     // Call Vectara API to generate post
+    async function callVectaraAPI(query, corpusKey) {
+      const data = {
+        query: query,
+        corpusKey: corpusKey,
+      };
+
       try {
-        const res = await fetch("/api/generate", {
+        const response = await fetch("http://localhost:3000/api/generate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt: input }),
+          body: JSON.stringify(data),
         });
-        const data = await res.json();
 
-        setMessages([
-          { text: input, isBot: false, seen: false },
-          { text: data.message.message, isBot: true, seen: false },
-          ...messages,
-        ]);
-        setInput("");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const responseData = await response.json();
+        console.log("Vectara API response:", responseData);
+        return responseData.answer;
       } catch (error) {
-        console.error("Error during /api/generate fetch:", error);
-    };
+        console.error("Error calling Vectara API:", error);
+        return null;
+      }
+    }
+    callVectaraAPI(input, sessionCookie).then((answer) => {
+      setMessages([
+        { text: input, isBot: false, seen: false },
+        { text: answer, isBot: true, seen: false },
+        ...messages,
+      ]);
+    });
+
+    // Reset input field
+    setInput("");
   };
 
   // Scroll to the chat history section
@@ -303,12 +361,13 @@ export default function Home() {
           <div ref={chatHistoryRef} className="space-y-4">
             {messages.map((msg, idx) => (
               <div
+                id={`message-${idx}`}
                 key={idx}
-                className={`p-4 rounded-lg ${
+                className={`p-4 rounded-lg message ${
                   msg.isBot
                     ? "bg-gray-800 text-white text-left"
                     : "bg-blue-500 text-white text-right"
-                } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
+                  } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
               >
                 <p>{msg.text}</p>
               </div>
