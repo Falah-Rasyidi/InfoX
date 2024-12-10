@@ -6,14 +6,10 @@ import Image from "next/image";
 export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [sessionCookie, setSessionCookie] = useState(null);
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const chatHistoryRef = useRef(null); // Reference for scrolling
-  const [topics, setTopics] = useState([
-    "Trending topic 1!",
-    "Trending topic 2!",
-    "Trending topic 3!",
-  ]); // State about trending news topics
   const [platform, setPlatform] = useState("");
   const [format, setFormat] = useState("");
   const [tone, setTone] = useState("");
@@ -135,6 +131,12 @@ export default function Home() {
       });
 
       data = await res.json();
+      console.log("DATA IS: ", data.message.message)
+      setArticles(
+        { articles: data.message.message },
+        ...articles,
+      )
+
     } catch (error) {
       console.log("Complication during /api/retrieve fetch:", error);
     }
@@ -322,58 +324,24 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-white">
             {isNewsMode ? "News Articles" : "Chat History"}
           </h2>
-          <button
-            onClick={toggleMode}
-            className="px-4 py-2 bg-customOrange bg-500 text-white rounded-lg font-semibold hover:bg-customGreen"
-          >
-            {isNewsMode ? "Switch to Chat History" : "Switch to News Articles"}
-          </button>
         </div>
 
         {/* Content */}
-        {isNewsMode ? (
-          <div className="p-4 flex gap-4 justify-center flex-wrap bg-white">
-            {messages.map((msg, idx) => (
-              // <div
-              //   key={idx}
-              //   className="p-4 bg-customWhite bg-200 rounded-lg shadow-md flex flex-col gap-2"
-              // >
-              //   <div className="text-orange-900 font-semibold">
-              //     News Topic: <span className="italic">{}</span>
-              //   </div>
-              //   <p className="text-sm">
-              //     {topic}
-              //   </p>
-              // </div>
-              <div
-                key={idx}
-                className={`p-4 rounded-lg ${
-                  msg.isBot
-                    ? "bg-gray-800 text-white text-left"
-                    : "bg-blue-500 text-white text-right"
-                } ${msg.seen ? "" : "border-4 border-yellow-400"}`} // Highlight unseen messages
-              >
-                <p>{msg.text}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div ref={chatHistoryRef} className="space-y-4">
-            {messages.map((msg, idx) => (
-              <div
-                id={`message-${idx}`}
-                key={idx}
-                className={`p-4 rounded-lg message ${
-                  msg.isBot
-                    ? "bg-gray-800 text-white text-left"
-                    : "bg-blue-500 text-white text-right"
-                  } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
-              >
-                <p>{msg.text}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        <div ref={chatHistoryRef} className="space-y-4">
+          {messages.map((msg, idx) => (
+            <div
+              id={`message-${idx}`}
+              key={idx}
+              className={`p-4 rounded-lg message ${
+                msg.isBot
+                  ? "bg-gray-800 text-white text-left"
+                  : "bg-blue-500 text-white text-right"
+                } ${msg.seen ? "message-seen" : "message-unseen"}`} // Highlight unseen messages
+            >
+              <p>{msg.text}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Animated Arrow */}
