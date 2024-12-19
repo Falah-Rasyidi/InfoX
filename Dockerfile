@@ -21,6 +21,9 @@ COPY . .
 RUN npm install
 RUN pip install -r requirements.txt --break-system-packages
 
+# Install NLTK stopwords and punkt for rake-nltk
+RUN python3 -c "import nltk; nltk.download('stopwords'); nltk.download('punkt_tab')"
+
 # Expose port 3000 for nextjs
 # Expose port 5000 for uvicorn
 EXPOSE 3000

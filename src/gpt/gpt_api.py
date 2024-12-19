@@ -1,12 +1,22 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from duckduckgo_search import DDGS
 from newspaper import Article
 from datetime import datetime
+from rake_nltk import Rake  # Changed from python_rake to rake_nltk
 
 import requests
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Add your frontend URL here
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Create a request model for incoming prompts
 class RequestModel(BaseModel):
@@ -36,16 +46,15 @@ async def extract(request: RequestModel):
     text = request.prompt
 
     try:
-        rake = Rake()
-        keywords = rake.run(text)
+        rake = Rake()  
+        rake.extract_keywords_from_text(text)
+        keywords = rake.get_ranked_phrases()
         print(f"KEYWORDS ARE: {keywords}\n")
         
-        return {"message": keywords[0][0]}
+        return {"message": keywords[0]}
     except Exception as e:
         print(f"Error processing request: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
 
 @app.post("/retrieve")
 async def retrieve(request: RequestModel):
@@ -137,7 +146,10 @@ async def retrieve(request: RequestModel):
                 print("An error occurred while fetching an article from News Data")
                 pass
 
-    print(articles)
+    # Print only the URLs and titles of the articles
+    for article in articles:
+        print(f"URL: {article['url']}, Title: {article['title']}")
+
     return { "message": articles }
 
 @app.post("/chat")

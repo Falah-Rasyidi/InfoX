@@ -3,6 +3,6 @@ fastapi
 lxml_html_clean
 newspaper3k
 pydantic
-python_rake
+rake-nltk
 requests
 uvicorn

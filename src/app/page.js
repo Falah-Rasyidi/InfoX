@@ -285,9 +285,8 @@ export default function Home() {
                 className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
                 value={platform}
                 onChange={handlePlatformChange}
-                defaultValue="Platform"
               >
-                <option value="Platform" disabled>
+                <option value="" disabled>
                   Pick a Platform
                 </option>
                 <option value="Facebook">Facebook</option>
@@ -302,9 +301,8 @@ export default function Home() {
                 className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
                 value={format}
                 onChange={handleFormatChange}
-                defaultValue="Format"
               >
-                <option value="Format" disabled>
+                <option value="" disabled>
                   Pick a Format
                 </option>
                 <option value="Post">Post</option>
@@ -318,9 +316,8 @@ export default function Home() {
                 className="bg-customOrange bg-400 text-white px-3 py-1 rounded-lg font-semibold hover:bg-customGreen bg-500"
                 value={tone}
                 onChange={handleToneChange}
-                defaultValue="Tone"
               >
-                <option value="Tone" disabled>
+                <option value="" disabled>
                   Pick a Tone
                 </option>
                 <option value="Formal">Formal</option>

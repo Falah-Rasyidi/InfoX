@@ -4,10 +4,14 @@ services:
     build: .
     ports:
       - 3000:3000
-    command: bash -c "npm run dev"
+    environment:
+      - IS_DOCKER=true
+    command: bash -c "npm run build && npm run start"   # Build and start in production
   backend:
     image: infox:2.1
     build: .
     ports:
-     - 5000:5000
-    command: bash -c "uvicorn src.gpt.gpt_api:app --reload --host 0.0.0.0 --port 5000"
+      - 5000:5000
+    environment:
+      - IS_DOCKER=true
+    command: bash -c "uvicorn src.gpt.gpt_api:app --host 0.0.0.0 --port 5000"  # For production
