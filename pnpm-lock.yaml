@@ -29,6 +29,9 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-66855b96-20241106
         version: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
+      tailwindcss:
+        specifier: ^3.4.15
+        version: 3.4.15
       uuid:
         specifier: ^11.0.3
         version: 11.0.3
@@ -42,9 +45,6 @@ importers:
       postcss:
         specifier: ^8
         version: 8.4.49
-      tailwindcss:
-        specifier: ^3.4.1
-        version: 3.4.15
 
 packages:
 
