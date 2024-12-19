@@ -1,12 +1,12 @@
 services:
   frontend:
-    image: infox:1.0
+    image: infox:2.1
     build: .
     ports:
       - 3000:3000
     command: bash -c "npm run dev"
   backend:
-    image: infox:1.0
+    image: infox:2.1
     build: .
     ports:
      - 5000:5000

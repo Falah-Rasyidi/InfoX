@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from duckduckgo_search import DDGS
-from python.rake.rake import *
 from newspaper import Article
 from datetime import datetime
 
@@ -138,6 +137,7 @@ async def retrieve(request: RequestModel):
                 print("An error occurred while fetching an article from News Data")
                 pass
 
+    print(articles)
     return { "message": articles }
 
 @app.post("/chat")
