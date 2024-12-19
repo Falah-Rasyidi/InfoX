@@ -38,3 +38,12 @@ tqdm==4.67.1
 typing_extensions==4.12.2
 urllib3==2.2.3
 uvicorn==0.34.0
+duckduckgo_search
+fastapi
+lxml-html-clean
+newspaper3k
+pydantic
+python-rake
+requests
+uvicorn
+
