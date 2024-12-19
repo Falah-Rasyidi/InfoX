@@ -4,7 +4,7 @@ export default async function handler(req, res) {
             const { prompt } = req.body;
             console.log(prompt);
 
-            const response = await fetch('http://localhost:5000/extract', {
+            const response = await fetch('http://backend:5000/extract', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

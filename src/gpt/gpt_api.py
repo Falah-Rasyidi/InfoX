@@ -137,7 +137,6 @@ async def retrieve(request: RequestModel):
                 print("An error occurred while fetching an article from News Data")
                 pass
 
-    print(articles)
     return { "message": articles }
 
 @app.post("/chat")

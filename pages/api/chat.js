@@ -5,7 +5,7 @@ export default async function handler(req, res) {
         console.log(prompt);
   
         // Call the GPT-4All API (replace the URL with your actual endpoint)
-        const response = await fetch('http://localhost:5000/chat', {
+        const response = await fetch('http://backend:5000/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
